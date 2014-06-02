@@ -58,7 +58,7 @@ import edu.internet2.middleware.shibboleth.idp.util.HttpServletHelper;
  */
 public class MCBLoginServlet extends HttpServlet {
 
-	public static final String VERSION = "1.1.2 (2014-04-11)";
+	public static final String VERSION = MCBLoginServlet.class.getPackage().getImplementationVersion();
 	/**
 	 * Serial UID 
 	 */
@@ -89,7 +89,7 @@ public class MCBLoginServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 
-        log.info(VERSION);
+        log.info("Multi-Context Broker Version: "+VERSION);
         
         mcbConfig = (MCBConfiguration) getServletContext().getAttribute("mcb.Configuration");
         log.debug("mcbConfig = [{}]", mcbConfig);
