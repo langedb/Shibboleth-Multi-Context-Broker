@@ -114,6 +114,14 @@ public class MCBLoginServlet extends HttpServlet {
     	log.debug("Request received from [{}]", request.getRemoteAddr());
     	// either find or create the principal object we will use for this user
     	principal = (MCBUsernamePrincipal) userSession.getAttribute(LoginHandler.PRINCIPAL_KEY);
+        
+        // Check and see if there is an existing session we are forcing to re-authenticate
+		Boolean forceAuth =  (Boolean) userSession.getAttribute(FORCE_REAUTH);
+		if ((forceAuth != null) && (forceAuth.booleanValue() == true)) {
+			log.debug("Performing force re-authentication for request.");
+            principal = null;
+		}
+        
     	if (principal == null) {
     		log.debug("Creating new principal object for request.");
     		principal = new MCBUsernamePrincipal("[principal]");
@@ -139,17 +147,6 @@ public class MCBLoginServlet extends HttpServlet {
 			return;
 		}
 		
-		// Check and see if there is an existing session we are forcing to re-authenticate
-		Boolean forceAuth =  (Boolean) userSession.getAttribute(FORCE_REAUTH);
-		if ((forceAuth != null) && (forceAuth.booleanValue() == true)) {
-			log.debug("Performing force re-authentication for request.");
-			List<String> requestedContexts = getRequestedContexts(request);
-			//userSession.removeAttribute(FORCE_REAUTH); // remove the key
-			showMethods(request, response, principal.getPotentialContexts(), requestedContexts);
-			return;
-		}
-		
-
 		// If this is the submission of the login form, we simply need to look up the stored submodule performing the
 		// authentication and let that submodule validate the user. No need to figure out which one again.
 		Boolean doAuth =  (Boolean) userSession.getAttribute(PERFORM_AUTHENTICATION_PARAM_NAME);
